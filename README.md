@@ -1,20 +1,22 @@
+> **Warning** : *This doc as been wrote for [GitLab 15.1.1](https://gitlab.com/gitlab-org/gitlab-foss/-/tags/v15.1.1).*
+
+________
+
 First create
 
-src
- |_ config.json
-
-
+src/config.json
+```
 {
 	"token": "{your token here}",
-
 	"version": "{version}",
-
-	"name": "{bot name}",
-
-	"mirorsRelations": [
-		
-		{"[link](https://sequelize.org/docs/v6/core-concepts/assocs/)": "{Sequelize.Associations}", "{source table}": "UserSeries", "target": "{target table}"}
-
-	]
-	
+	"name": "{bot name}",	
 }
+```
+
+
+## Liens des documentations
+
+### Discord doc
+| Part | link |
+| :--- | :--- |
+| DataBase | [TablesDoc.md](./src/database/mirors/TablesDoc.md)

@@ -22,7 +22,11 @@ module.exports = {
 					key: "owner"
 				}
 			},
-			volume_list: Sequelize.TEXT
+			volume_list: {
+				type: Sequelize.TEXT,
+				allowNull: false,
+				defaultValue: ""
+			}
 		});
 	}
 }

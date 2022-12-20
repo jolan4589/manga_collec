@@ -10,6 +10,7 @@ module.exports = {
 				primaryKey: true,
 				allowNull: false,
 			},
+			author: Sequelize.STRING,
 			editor: Sequelize.STRING,
 			inShort: Sequelize.TEXT,
 			ended: Sequelize.BOOLEAN,

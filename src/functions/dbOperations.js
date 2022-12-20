@@ -1,6 +1,6 @@
 const { Collection } = require("discord.js");
 const fs = require("fs");
-const mirorsRelations = require("../config.json").mirorsRelations
+const mirorsRelations = require("../database/mirors/relations.json");
 
 module.exports = (client) => {
 	client.dbOperations = async (databaseFolder, path) => {

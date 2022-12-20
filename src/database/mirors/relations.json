@@ -1,0 +1,6 @@
+[
+	{"link": "belongsTo", "source": "UserSeries", "target": "Collections", "args": [{"foreignKey": "owner"}]},
+	{"link": "belongsTo", "source": "UserSeries", "target": "Series", "args": [{"foreignKey": "title"}]},
+	{"link": "hasMany", "source": "Collections", "target": "UserSeries", "args": [{"foreignKey": "owner"}]},
+	{"link": "hasMany", "source": "Series", "target": "UserSeries", "args": [{"foreignKey": "title"}]}
+]

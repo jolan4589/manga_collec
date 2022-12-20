@@ -10,7 +10,8 @@ module.exports = {
 				primaryKey: true,
 				allowNull: false,
 			},
-			total_manga: {
+			name: Sequelize.STRING,
+			total_books: {
 				type: Sequelize.INTEGER,
 				defaultValue: 0,
 				allowNull: false,
