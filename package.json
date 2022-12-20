@@ -1,0 +1,19 @@
+{
+  "name": "manga_collec",
+  "version": "1.0.0",
+  "description": "Discord bot + web site manga data base",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ald4nia",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/builders": "^1.4.0",
+    "@discordjs/rest": "^1.5.0",
+    "discord-api-types": "^0.37.24",
+    "discord.js": "^14.7.1",
+    "sequelize": "^6.27.0",
+    "sqlite3": "^5.1.4"
+  }
+}
