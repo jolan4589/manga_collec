@@ -12,9 +12,8 @@ module.exports = (client) => {
 				client.db[folder].set(content.name, folder == "mirors" ? (await content.define(client)) : content.value);
 			}
 		}
-
 		for (const relation of mirorsRelations) {
-			client.db.mirors.get(relation.source)[relation.link](client.db.mirors.get(relation.target));
+			await client.db.mirors.get(relation.source)[relation.link](client.db.mirors.get(relation.target), ...relation.args);
 		}
 	}
 }

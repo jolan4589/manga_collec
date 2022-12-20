@@ -8,6 +8,7 @@ module.exports = {
 				type: Sequelize.STRING,
 				unique: true,
 				primaryKey: true,
+				allowNull: false,
 			},
 			editor: Sequelize.STRING,
 			inShort: Sequelize.TEXT,

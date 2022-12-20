@@ -47,22 +47,3 @@ client.commands = new Collection();
 	
 	client.login(Conf.token);
 })();
-
-
-/* Supprimer une commande
-
-const guildId = "773987727746007040"
-const clientId = "790926062795620352"
-const { REST, Routes } = require('discord.js');
-const rest = new REST({ version: '10' }).setToken(Conf.token);
-
-// Guilde
-await rest.delete(Routes.applicationGuildCommand(clientId, guildId,'1054510339468828752'))
-	.then(() => console.log('Successfully deleted guild command'))
-	.catch(console.error);
-
-// Globall
-await rest.delete(Routes.applicationCommand(clientId,'commandId'))
-	.then(() => console.log('Successfully deleted guild command'))
-	.catch(console.error);
-*/

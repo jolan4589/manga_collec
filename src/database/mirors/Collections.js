@@ -8,6 +8,7 @@ module.exports = {
 				type: Sequelize.STRING,
 				unique: true,
 				primaryKey: true,
+				allowNull: false,
 			},
 			total_manga: {
 				type: Sequelize.INTEGER,

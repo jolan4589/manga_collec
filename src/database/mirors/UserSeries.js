@@ -6,13 +6,21 @@ module.exports = {
 		return client.db.sequelize.define("UserSeries", {
 			title: {
 				type: Sequelize.STRING,
-				unique: true,
 				primaryKey: true,
+				allowNull: false,
+				references: {
+					model: "Series",
+					key: "title"
+				}
 			},
 			owner: {
 				type: Sequelize.STRING,
-				unique: true,
 				primaryKey: true,
+				allowNull: false,
+				references: {
+					model: "Collections",
+					key: "owner"
+				}
 			},
 			volume_list: Sequelize.TEXT
 		});
