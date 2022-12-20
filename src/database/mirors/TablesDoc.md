@@ -8,11 +8,11 @@ _____________
 ## Table of content
 [ ] - [**Home doc**](../../../README.md#discord-doc)
 - [Collections](#collections)
-	* [exemple](#collections-tuple-exemple)
+	* [exemple](#collections-tuple-exemple-)
 - [Series](#series)
-	* [exemple](#series-tuple-exemple)
+	* [exemple](#series-tuple-exemple-)
 - [UserSeries](#userseries)
-	* [exemple](#userseries-tuple-exemple)
+	* [exemple](#userseries-tuple-exemple-)
 _____________
 
 ## Collections
