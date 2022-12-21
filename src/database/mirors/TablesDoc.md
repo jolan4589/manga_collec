@@ -34,7 +34,7 @@ ____________
 
 | attribute | type | description | key
 | :--- | ---: | :--- | ---: |
-| title | `STRING` | Title of the book| primary | primary |
+| title | `STRING` | Title of the book, lowercase only | primary | primary |
 | author | `STRING` | Name of the author that wrote the book | - |
 | editor | `STRING` | Name of the editor that published this.title | - |
 | ended | `BOOLEAN` | True if the serie's ended | - |
@@ -42,8 +42,8 @@ ____________
 
 ### ___Series Tuple exemple :___
 
-* Series("`Alice in Wonderland`", "`One among all`", `true`, `5`)
-* Series("`One Piece`", "`Glénat`", `false`, `104`)
+* Series("`alice in Wonderland`", "`One among all`", `true`, `5`)
+* Series("`one piece`", "`Glénat`", `false`, `104`)
 __________
 
 ## UserSeries
