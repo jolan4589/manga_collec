@@ -176,11 +176,14 @@ function concatParts(parts, i, j) {
  * @returns {String} volume_list modified
  */
 function insertVolumToList(val, volume_list) {
+	if (!volume_list || volume_list == "") {
+		return `${val}`
+	}
+
 	let parts = volume_list.split(",");
 	
 	let i = 0;
 	let res = true;
-	
 	while (res && i < parts.length) {
 		const part = parts[i];
 		if (part.startsWith("[")) {

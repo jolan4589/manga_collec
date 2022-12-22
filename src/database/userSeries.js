@@ -1,7 +1,7 @@
 /********************************\
  * **************************** *
  * This file contain functions 	*
- * About userSeries				*
+ * About UserSeries				*
  * **************************** *
 \********************************/
 
@@ -12,6 +12,7 @@ const VList = require("./volume_list.js");
 
 /** 
  * @typedef {String} Discord.userId
+ * @typedef {Model} Sequelize.Model
  */
 
 /**
@@ -23,7 +24,7 @@ const VList = require("./volume_list.js");
  * 
  * @returns {Array<Model>} list of matching userSeries
  */
-async function getUserSeries(db_userSeries, userId, attributes = []) {
+async function getUserSeries(db_userSeries, userId, attributes = {}) {
 	return await (db_userSeries.findAll({ where: { owner: userId }, attributes: attributes }));
 }
 
@@ -37,8 +38,8 @@ async function getUserSeries(db_userSeries, userId, attributes = []) {
  * 
  * @returns {Sequelize.Model}
  */
-async function getUserSerieByName(db_userSeries, userId, title, attributes = []) {
-	return await (db_userSeries.findOne({ where: { owner: userId, title:title }, attributes: attributes}));
+async function getUserSerieByName(db_userSeries, userId, title, attributes = {}) {
+	return await (db_userSeries.findOne({ where: { owner: userId, title:title }, attributes: {}}));
 }
 
 /**
@@ -79,7 +80,7 @@ async function addUserSerie(db_userSeries, userId, title, volume_list = "") {
  * @param {String} volume 
  */
 async function addVolumeToUserSerie(db_userSeries, userId, title, volume) {
-	const userSerie = db.findOne({ where: { owner: userId, title:title } });
+	const userSerie = await db_userSeries.findOne({ where: { owner: userId, title:title } });
 	let res;
 
 	if (userSerie) {
