@@ -45,25 +45,33 @@ function getArgsFromJson(json) {
 	return args
 }
 
-// init path with "./src/unitTest"
 function runAllTests(path) {
-	console.log("./src/unitTest" + path)
 	const subDir = fs.readdirSync("./src/unitTest" + path, {withFileTypes: true}).filter(file => file.isDirectory()).map(file => file.name);
 	const subFiles = fs.readdirSync("./src/unitTest" + path).filter(file => file.endsWith(".json"));
+	let result = [];
+
+	console.log("./src/unitTest" + path);
+	for (const file of subFiles) {
+		const f = require(`../${path}`)[file.slice(0,-5)];
+		const tmp = getArgsFromJson(require(`.${path}/${file}`));
+
+		console.log(`<----- ${file.slice(0,-5)} ----->`);
+		result.push({name: file, result: multipleAssertEqual(f, ...tmp)});
+	}
+
+	result.forEach(res => {
+		console.log(`< Result ${res.name} : \x1b[32m${res.result[0]}\x1b[0m/${res.result[0] + res.result[1]} >`);
+		if (res.result[1] > 0) console.log(`< Failed : \x1b[32m${res.result[1]}\x1b[0m >`);
+	});
+
+	console.log(`< Total passed : ${result.map(val => val.result[0]).reduce((a,b) => a+b, 0)}/${result.map(val => val.result[1] + val.result[0]).reduce((a, b) => a + b, 0)} >`);
 	for (const dir of subDir) {
 		runAllTests(`${path}/${dir}`)
-	}
-	for (const file of subFiles) {
-		const f = require(`../${path}`)[file.slice(0,-5)]
-		const tmp = getArgsFromJson(require(`.${path}/${file}`))
-		console.log(`<----- ${file.slice(0,-5)} ----->`)
-		const result = multipleAssertEqual(f, ...tmp)
-		console.log(`< Result ${file.slice(0,-5)} : \x1b[32m${result[0]}\x1b[0m/${result[0] + result[1]} >`);
-		if (result[1] > 0) console.log(`< Failed : \x1b[32m${result[1]}\x1b[0m >`)
 	}
 }
 
 runAllTests("");
+
 module.exports = {
 	multipleAssertEqual,
 	assertEqual,

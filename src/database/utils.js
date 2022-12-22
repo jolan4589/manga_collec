@@ -24,24 +24,33 @@ function isInVolume_list (input, userVolume_list) {
 	return false
 }
 
-function isCorrectVolume_list (volume_list) {
-	const reg = /^((\[\d+-\d+\])|(\d+))(,((\[\d+-\d+\])|(\d+)))*$/ig
+/**
+ * Check if str is a correct volume_list string.
+ * 
+ * Every part should be greater than previous one.
+ * Every part should respect [x-y] ou x where x and y are decimal numbers and x < y.
+ * @param {String} str 
+ * 
+ * @returns {Boolean}
+ */
+function isCorrectVolume_list (str) {
+	const reg = /^((\[\d+-\d+\])|(\d+))(,((\[\d+-\d+\])|(\d+)))*$/ig;
 
-	if ((reg).test(volume_list)) {
-		const parts = volume_list.split(",");
-		let cpt = -2; // In case serie starts by volume 0
+	if ((reg).test(str)) {
+		const parts = str.split(",");
+		let currentGreater = -2; // In case serie starts by volume 0 cpt = -2.
 		for (const part of parts) {
 			if (part.startsWith("[")) { // check for [x-y] format
 				const [start, end] = part.slice(1,-1).split("-").map(val=>parseInt(val));
-				if (!start || ! end || end <= start || cpt >= end || start - cpt < 2) {
-					return false
-				}
-				cpt = end;
-			} else { // check for x format
-				if (cpt >= part || part - cpt < 2) {
+				if (!start || ! end || end <= start || currentGreater >= end || start - currentGreater < 2) {
 					return false;
 				}
-				cpt = parseInt(part)
+				currentGreater = end;
+			} else { // check for x format
+				if (currentGreater >= part || part - currentGreater < 2) {
+					return false;
+				}
+				currentGreater = parseInt(part);
 			}
 		}
 		return true;
@@ -49,10 +58,22 @@ function isCorrectVolume_list (volume_list) {
 	return false
 }
 
+/**
+ * Insert a volume number in a volume_list splited un parts at part i.
+ * 
+ * @param {String} val value to insert
+ * @param {Array<String>} parts array of volume_list parts
+ * @param {Integer} i pos of the part
+ * 
+ * @returns {Array<String>} parts modified
+ */
 function insertVolumeToPart(val, parts, i) {
-	if (parts[i].startsWith("[")) {
+	if (parts[i].startsWith("[")) { // case part folow format : [x-y]
 		const [start, end] = parts[i].slice(1,-1).split("-").map(val => parseInt(val));
 
+		// val is a new max or min -> replace previous bound by val
+		// val is inside bounds -> nothing apprend
+		// otherwise -> create a new part in parts
 		if (val == start - 1) {
 			parts[i] = `[${val}-${end}]`;
 		} else if (val < start) {
@@ -62,7 +83,11 @@ function insertVolumeToPart(val, parts, i) {
 		} else if (val > end) {
 			parts.splice(i+1, 0, val);
 		}
-	} else {
+	} else { // case part folow format : x
+
+		// abs(part-val) = 1 -> transform part to [x-y] format
+		// abs(part-val) = 0 -> nothign append
+		// otherwise -> create a new part in parts
 		parts[i] = parseInt(parts[i]);
 		if (val == parts[i] - 1) {
 			parts[i] = `[${val}-${parts[i]}]`;
@@ -74,11 +99,20 @@ function insertVolumeToPart(val, parts, i) {
 			parts.splice(i+1, 0, val);
 		}
 	}
-	parts = parts.map(elem => elem.toString())
-	return parts
+	parts = parts.map(elem => elem.toString());
+	
+	return parts;
 }
 
-
+/**
+ * Fonction that concat two parts i and j if needed.
+ * 
+ * @param {Array<String>} parts arrays of volume_list parts
+ * @param {Integer} i index of first part
+ * @param {Integer} j index of second part
+ * 
+ * @returns {Array<String>} parts modified
+ */
 function concatParts(parts, i, j) {
 	const leftPart = parts[i];
 	const rightPart = parts[j];
@@ -126,8 +160,16 @@ function concatParts(parts, i, j) {
 	return parts;
 }
 
-function insertVolumToList(val, list) {
-	let parts = list.split(",");
+/**
+ * Function that insert a volume into a volume_list.
+ * 
+ * @param {String} val volume to insert
+ * @param {String} volume_list volume_list
+ * 
+ * @returns {String} volume_list modified
+ */
+function insertVolumToList(val, volume_list) {
+	let parts = volume_list.split(",");
 	
 	let i = 0;
 	let res = true;
