@@ -1,3 +1,10 @@
+/********************************\
+ * **************************** *
+ * This file contain functions 	*
+ * About userSeries.volume_list	*
+ * **************************** *
+\********************************/
+
 /**
  * Fonction that check if input in in a volume_list
  * 
@@ -193,10 +200,35 @@ function insertVolumToList(val, volume_list) {
 	return(parts.join(","))
 }
 
+/**
+ * Count total volumes that are presents in a volume_list
+ * 
+ * @param {String} volume_list
+ * 
+ * @returns {Integer}
+ */
+function countTotalVolume(volume_list) {
+	if (!volume_list || volume_list.length == 0)
+		return 0;
+
+	const parts = volume_list.replace(/\[|\]/ig, "").split(/,/ig).map(val => val.split("-"));
+	let count = 0;
+
+	for (const part of parts) {
+		if (part.length > 1) {
+			count += part[1] - part[0] + 1;
+		} else {
+			count++;
+		}
+	}
+	return count;
+}
+
 module.exports = {
 	isInVolume_list,
 	isCorrectVolume_list,
 	insertVolumToList,
 	insertVolumeToPart,
-	concatParts
+	concatParts,
+	countTotalVolume
 }
