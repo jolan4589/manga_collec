@@ -20,4 +20,4 @@ module.exports = async function(userId, title, volume) {
 		res = await create(this, userId, title, volume);
 	}
 	return res;
-}
+};

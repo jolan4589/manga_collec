@@ -2,7 +2,8 @@ const assert = require("assert");
 const fs = require("fs");
 
 function assertEqual(f, expected, num=1, over=1, ...args) {
-	let val
+	let val;
+	
 	try {
 		val = f(...args);
 		assert.equal(JSON.stringify(val), JSON.stringify(expected));
@@ -39,7 +40,7 @@ function getArgsFromJson(json) {
 
 	for (const elem of json) {
 		for (const data of elem.data) {
-			args.push(createTestData(elem.expected, data))
+			args.push(createTestData(elem.expected, data));
 		}
 	}
 	return args
@@ -66,7 +67,7 @@ function runAllTests(path) {
 
 	console.log(`< Total passed : ${result.map(val => val.result[0]).reduce((a,b) => a+b, 0)}/${result.map(val => val.result[1] + val.result[0]).reduce((a, b) => a + b, 0)} >`);
 	for (const dir of subDir) {
-		runAllTests(`${path}/${dir}`)
+		runAllTests(`${path}/${dir}`);
 	}
 }
 
@@ -76,4 +77,4 @@ module.exports = {
 	multipleAssertEqual,
 	assertEqual,
 	createTestData
-}
+};

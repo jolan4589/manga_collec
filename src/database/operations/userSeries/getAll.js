@@ -8,4 +8,4 @@
  */
 module.exports = async function (userId, attributes = {}) {
 	return await (this.findAll({ where: { owner: userId }, attributes: attributes }));
-}
+};

@@ -9,4 +9,4 @@
  */
 module.exports = async function (userId, title, attributes = {}) {
 	return await (this.findOne({ where: { owner: userId, title:title }, attributes: attributes}));
-}
+};

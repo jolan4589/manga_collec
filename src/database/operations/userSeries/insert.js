@@ -23,4 +23,4 @@ module.exports = async function (userId, title, volume_list = "") {
 	} else {
 		return new Error(`volume_list should only contain 'Number' and '[Number-Number]' separate by ',' and in ascending order.`);
 	}
-}
+};

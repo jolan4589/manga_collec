@@ -22,4 +22,4 @@ module.exports = (client) => {
 			await client.db.mirors.get(relation.source)[relation.link](client.db.mirors.get(relation.target), ...relation.args);
 		}
 	}
-}
+};

@@ -17,4 +17,4 @@ module.exports = async function (client) {
 	for (const file of files) {
 		userSeries[file] = require(`./userSeries/${file}.js`);
 	}
-}
+};

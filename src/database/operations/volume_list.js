@@ -242,4 +242,4 @@ module.exports = async function (client) {
 		concat2Parts,
 		countTotalVolume
 	}
-}
+};
