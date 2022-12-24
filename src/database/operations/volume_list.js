@@ -13,7 +13,7 @@
  *
  * @returns {Boolean}
  */
-function isInVolume_list (input, userVolume_list) {
+function contains (input, userVolume_list) {
 	const parts = userVolume_list.split(",");
 
 	for (const part of parts) {
@@ -40,7 +40,10 @@ function isInVolume_list (input, userVolume_list) {
  * 
  * @returns {Boolean}
  */
-function isCorrectVolume_list (str) {
+function isCorrect (str) {
+	if (str == "") {
+		return true;
+	}
 	const reg = /^((\[\d+-\d+\])|(\d+))(,((\[\d+-\d+\])|(\d+)))*$/ig;
 
 	if ((reg).test(str)) {
@@ -74,7 +77,7 @@ function isCorrectVolume_list (str) {
  * 
  * @returns {Array<String>} parts modified
  */
-function insertVolumeToPart(val, parts, i) {
+function insertToPart(val, parts, i) {
 	if (parts[i].startsWith("[")) { // case part folow format : [x-y]
 		const [start, end] = parts[i].slice(1,-1).split("-").map(val => parseInt(val));
 
@@ -120,7 +123,7 @@ function insertVolumeToPart(val, parts, i) {
  * 
  * @returns {Array<String>} parts modified
  */
-function concatParts(parts, i, j) {
+function concat2Parts(parts, i, j) {
 	const leftPart = parts[i];
 	const rightPart = parts[j];
 
@@ -175,7 +178,7 @@ function concatParts(parts, i, j) {
  * 
  * @returns {String} volume_list modified
  */
-function insertVolumToList(val, volume_list) {
+function insertVolume(val, volume_list) {
 	if (!volume_list || volume_list == "") {
 		return `${val}`
 	}
@@ -196,9 +199,9 @@ function insertVolumToList(val, volume_list) {
 		i++;
 	}
 	i--;
-	parts = insertVolumeToPart(val, parts, i);
-	while (i < parts.length - 1 && parts.length != (parts = concatParts(parts, i, i+1)).length); // concat right
-	while (i > 0 && parts.length > i && parts.length != (parts = concatParts(parts, i-1, i--)).length); // concat left
+	parts = insertToPart(val, parts, i);
+	while (i < parts.length - 1 && parts.length != (parts = concat2Parts(parts, i, i+1)).length); // concat right
+	while (i > 0 && parts.length > i && parts.length != (parts = concat2Parts(parts, i-1, i--)).length); // concat left
 	
 	return(parts.join(","))
 }
@@ -227,11 +230,16 @@ function countTotalVolume(volume_list) {
 	return count;
 }
 
-module.exports = {
-	isInVolume_list,
-	isCorrectVolume_list,
-	insertVolumToList,
-	insertVolumeToPart,
-	concatParts,
-	countTotalVolume
+module.exports = async function (client) {
+	let userSeries;
+	while (! (userSeries = await client.db.mirors.get("UserSeries")));
+
+	userSeries.volume_list = {
+		contains,
+		isCorrect,
+		insertVolume,
+		insertToPart,
+		concat2Parts,
+		countTotalVolume
+	}
 }
