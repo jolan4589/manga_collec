@@ -230,6 +230,34 @@ function countTotalVolume(volume_list) {
 	return count;
 }
 
+function findFirstMissing(volume_list) {
+	let lastVolume = 0;
+	const parts = volume_list.replace(/\[|\]/ig, "").split(/,/ig).map(val => val.split("-"));
+	
+	for (const part of parts) {
+		if (part[0] > lastVolume + 1) {
+			return part[0];
+		}
+
+		lastVolume = parseInt(part[part.length < 2 ? 0 : 1]);
+	}
+	return (lastVolume + 1)
+}
+
+function compare(firstVolume_list, secondVolume_list) {
+	let res;
+
+	const first_total = countTotalVolume(firstVolume_list);
+	const second_total = countTotalVolume(secondVolume_list);
+
+	if (first_total == second_total) {
+		res = findFirstMissing(firstVolume_list) < findFirstMissing(secondVolume_list);
+	} else {
+		res = first_total < second_total;
+	}
+	return res;
+}
+
 module.exports = async function (client) {
 	let userSeries;
 	while (! (userSeries = await client.db.mirors.get("UserSeries")));
@@ -240,6 +268,8 @@ module.exports = async function (client) {
 		insertVolume,
 		insertToPart,
 		concat2Parts,
-		countTotalVolume
+		countTotalVolume,
+		findFirstMissing,
+		compare
 	}
 };
