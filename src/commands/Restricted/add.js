@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, User } = require("discord.js");
 
 module.exports = {
 	global: false,
@@ -21,15 +21,18 @@ module.exports = {
 				.setRequired(false)
 			),
 	async execute(interaction) {
-		try {
-			const mirors = interaction.client.db.miros;
-			const Collections = mirors.get("Collections");
-			const Series = mirors.get("Series");
-			const bookname = interaction.options.getString("bookname");
+		const mirors = interaction.client.db.mirors;
+		const Collections = mirors.get("Collections");
+		const Series = mirors.get("Series");
+		const UserSeries = mirors.get("UserSeries");
+		const bookname = interaction.options.getString("bookname").toLowerCase();
+		const volumeToAdd = interaction.options.getString("number");
+		let res;
 
-			if (await Series.findByPk(bookname.toLowerCase())) {
+		try {
+			if (await Series.findByPk(bookname)) {
 				const userId = interaction.user.id;
-				const userCollection = Collections.findByPk(userId);
+				const userCollection = await Collections.findByPk(userId);
 
 				if (!userCollection) {
 					await Collections.create({
@@ -37,30 +40,29 @@ module.exports = {
 						name: interaction.user.username
 					})
 				}
+
+				const [userSerie, ] = await UserSeries.findOrCreate({
+					where: { owner: userId, title: bookname },
+					defaults: {
+						volume_list: ""
+					}
+				});
+
+				userSerie.volume_list = await UserSeries.volume_list.insertVolume(volumeToAdd, userSerie.volume_list);
+				await userSerie.save({ fields: ['volume_list'] });
+				res = `Your serie ${bookname} as been updated`;
 			} else {
-				await interaction.reply(`The series ${bookname} does not exist in our database. Contact support for addit`)
+				res = `The series ${bookname} does not exist in our database. Contact support for add it`;
 			}
-
-			if (!mirors.get("Collections").findByPk(interaction.user.id)) {
-				mirors.get("Collection")
-			}
-			// equivalent to: INSERT INTO tags (name, description, username) values (?, ?, ?);
-			const tag = await interaction.client.db.mirors.get("Test").create({
-				name: interaction.options.getString("name"),
-				description: interaction.options.getString("description"),
-				username: interaction.user.username,
-			});
 		} catch (error) {
-			if (error.name === 'SequelizeUniqueConstraintError') {
-				return interaction.reply('That tag already exists.');
+			if (error.name === "SequelizeUniqueConstraintError") {
+				res = "That tag already exists.";
+			} else {
+				console.log(error)
+				res = "Something went wrong with adding a tag.";
 			}
-
-			return interaction.reply('Something went wrong with adding a tag.');
 		}
-		interaction.client.db.mirors.get("Test")
-		
-	
 
-		await interaction.reply({content: `tmp`, ephemeral: interaction.options.getBoolean("hide")})
+		await interaction.reply({content: res, ephemeral: interaction.options.getBoolean("hide")})
 	}
 }

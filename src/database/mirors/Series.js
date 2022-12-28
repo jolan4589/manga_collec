@@ -12,7 +12,7 @@ module.exports = {
 			},
 			author: Sequelize.STRING,
 			editor: Sequelize.STRING,
-			inShort: Sequelize.TEXT,
+			in_short: Sequelize.TEXT,
 			ended: Sequelize.BOOLEAN,
 			volume_number: {
 				type: Sequelize.INTEGER,
