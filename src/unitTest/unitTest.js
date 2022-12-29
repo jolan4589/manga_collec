@@ -53,7 +53,7 @@ function runAllTests(path) {
 
 	console.log("./src/unitTest" + path);
 	for (const file of subFiles) {
-		const f = require(`../${path}`)[file.slice(0,-5)];
+		const f = require(`..${path}`)[file.slice(0,-5)];
 		const tmp = getArgsFromJson(require(`.${path}/${file}`));
 
 		console.log(`<----- ${file.slice(0,-5)} ----->`);
@@ -67,6 +67,7 @@ function runAllTests(path) {
 
 	console.log(`< Total passed : ${result.map(val => val.result[0]).reduce((a,b) => a+b, 0)}/${result.map(val => val.result[1] + val.result[0]).reduce((a, b) => a + b, 0)} >`);
 	for (const dir of subDir) {
+		console.log(">", path, dir)
 		runAllTests(`${path}/${dir}`);
 	}
 }

@@ -178,33 +178,38 @@ function concat2Parts(parts, i, j) {
  * 
  * @returns {String} volume_list modified
  */
-function insertVolume(val, volume_list) {
+function insertVolume(toAdd, volume_list) {
 	if (!volume_list || volume_list == "") {
-		return `${val}`
+		return `${toAdd}`
 	}
 
 	let parts = volume_list.split(",");
-	
 	let i = 0;
 	let res = true;
+	let min = toAdd.startsWith("[") ?  toAdd.split("-")[0].slice(1) : toAdd;
+
 	while (res && i < parts.length) {
 		const part = parts[i];
+
 		if (part.startsWith("[")) {
 			const end = part.slice(1,-1).split("-").map(val => parseInt(val))[1];
 
-			res = val > end;
+			res = min > end;
 		} else {
-			res = val > parseInt(part);
+			res = min > parseInt(part);
 		}
 		i++;
 	}
 	i--;
-	parts = insertToPart(val, parts, i);
+	console.log(">>parts", parts, toAdd, volume_list, i)
+	parts.splice(i, 0, toAdd);
+	console.log(">>parts2", parts)
 	while (i < parts.length - 1 && parts.length != (parts = concat2Parts(parts, i, i+1)).length); // concat right
 	while (i > 0 && parts.length > i && parts.length != (parts = concat2Parts(parts, i-1, i--)).length); // concat left
 	
 	return(parts.join(","))
 }
+
 
 /**
  * Count total volumes that are presents in a volume_list
@@ -257,6 +262,22 @@ function compare(firstVolume_list, secondVolume_list) {
 	}
 	return res;
 }
+
+
+/**
+ * décommenter pour faire un unit test
+ */
+/*
+module.exports = {
+	contains,
+	isCorrect,
+	insertVolume,
+	insertToPart,
+	concat2Parts,
+	countTotalVolume,
+	findFirstMissing,
+	compare
+}*/
 
 module.exports = async function (client) {
 	let userSeries;
