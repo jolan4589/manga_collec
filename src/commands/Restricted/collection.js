@@ -47,28 +47,18 @@ module.exports = {
 	async execute(interaction) {
 		const hide = interaction.options.getBoolean("hide") ?? false
 
-		const field = interaction.options.getString("sortby");
-		const coeficient = interaction.options.getInteger("sort") ?? 0;
 		const db_userSeries = interaction.client.db.mirors.get("UserSeries");
-		const page = (interaction.options.getInteger("page") ?? 1) - 1;
-		const displayLen = interaction.options.getInteger("displaylen") ?? 15;
-		let res;
 
-		try {
-			const userSeries = await db_userSeries.getAll(interaction.user.id);
-			if (userSeries.length) {
-				const sortedSeries = field ? userSeries.sort((a, b) => {
-					const resop = field == "volume_list" ? db_userSeries.volume_list.compare(a.volume_list, b.volume_list) : (a[field] < b[field]);
-					return coeficient * (resop ? -1 : 1);
-				}) : userSeries;
-				res = db_userSeries.toMessage(sortedSeries, { page: page, displayLen: displayLen });
-			} else {
-				res = {content: "Sorry, you dont have database."}
-			}
-		} catch (error) {
-			res = {content: "An error as occured"};
-			console.log(error);
-		}
+		const res = await db_userSeries.toMessage(interaction.client.db.mirors, {
+			page: (interaction.options.getInteger("page") ?? 1) - 1,
+			field: interaction.options.getString("sortby"),
+			displayLen: interaction.options.getInteger("displaylen"),
+			coeficient: interaction.options.getInteger("sort"),
+			userId: interaction.user.id
+		});
+
+		interaction.client.collectors.collectionPreviousCollector(interaction);
+		interaction.client.collectors.collectionFolowingCollector(interaction);
 
 		res.ephemeral = hide;
 		await interaction.reply(res);
