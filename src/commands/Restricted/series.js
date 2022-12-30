@@ -25,9 +25,8 @@ module.exports = {
 		const focusedValue = interaction.options.getFocused();
 		const series = await interaction.client.db.mirors.get("Series").findAll();
 		const titles = series.map(val => val.title);
-		const reg = new RegExp(focusedValue.split("").join(".*"), "ig");
-		const filtered = titles.filter(title => reg.test(title));
-
+		const reg = new RegExp(`.*${focusedValue.split("").join(".*")}.*`, "ig");
+		const filtered = titles.filter(title => title.match(reg));
 		await interaction.respond(
 			filtered.map(choice => ({ name: choice, value: choice })),
 		);
@@ -35,22 +34,26 @@ module.exports = {
 	async execute(interaction) {
 		const reg = new RegExp((interaction.options.getString("title") ?? "").split("").join(".*"), "ig");
 		const hide = interaction.options.getBoolean("hide") ?? false;
-		
-		const series = (await interaction.client.db.mirors.get("Series").findAll()).filter(serie => reg.test(serie.name));
+		const series = (await interaction.client.db.mirors.get("Series").findAll()).filter(serie => serie.title.match(reg));
+		let message;
 
-		let fields = [];
-		for (const serie of series) {
-			fields.push({name: serie.title, value: `${serie.ended ? "complted in" : "Still in progress with"} ${serie.volume_number} volumes.`});
+		if (series.length > 0) {
+
+			let fields = [];
+			for (const serie of series) {
+				fields.push({name: serie.title, value: `${serie.ended ? "complted in" : "Still in progress with"} ${serie.volume_number} volumes.`});
+			}
+
+			message = {
+				embeds: [{
+					name: "Finded series",
+					fields: fields
+				}],
+				ephemeral: hide
+			};
+		} else {
+			message = {content: `No serie found for : ${interaction.options.getString("title")}`};
 		}
-
-		let message = {
-			embeds: [{
-				name: "Finded series",
-				fields: fields
-			}],
-			ephemeral: hide
-		};
-
 		await interaction.reply(message);
 	}
 }
