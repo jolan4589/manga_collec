@@ -184,26 +184,22 @@ function insertVolume(toAdd, volume_list) {
 	}
 
 	let parts = volume_list.split(",");
-	let i = 0;
+	let i = -1;
 	let res = true;
-	let min = toAdd.startsWith("[") ?  toAdd.split("-")[0].slice(1) : toAdd;
+	let min = parseInt(toAdd.startsWith("[") ?  toAdd.split("-")[0].slice(1) : toAdd);
 
-	while (res && i < parts.length) {
+	while (res && ++i < parts.length) {
 		const part = parts[i];
 
 		if (part.startsWith("[")) {
-			const end = part.slice(1,-1).split("-").map(val => parseInt(val))[1];
+			const end = parseInt(part.slice(1,-1).split("-")[1]);
 
 			res = min > end;
 		} else {
 			res = min > parseInt(part);
 		}
-		i++;
 	}
-	i--;
-	console.log(">>parts", parts, toAdd, volume_list, i)
 	parts.splice(i, 0, toAdd);
-	console.log(">>parts2", parts)
 	while (i < parts.length - 1 && parts.length != (parts = concat2Parts(parts, i, i+1)).length); // concat right
 	while (i > 0 && parts.length > i && parts.length != (parts = concat2Parts(parts, i-1, i--)).length); // concat left
 	
@@ -277,8 +273,8 @@ module.exports = {
 	countTotalVolume,
 	findFirstMissing,
 	compare
-}*/
-
+}
+*/
 module.exports = async function (client) {
 	let userSeries;
 	while (! (userSeries = await client.db.mirors.get("UserSeries")));
