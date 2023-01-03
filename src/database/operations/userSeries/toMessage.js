@@ -1,26 +1,4 @@
-
-/**
- * Calculate real page to show,
- * loop from 1 to total_pages.
- * 
- * If page is negativ, loop from total_pages to 1
- * @param {String | Number} page 
- * @param {Number} total_pages 
- * 
- * @returns {Number} included in [1..total_pages]
- */
-function defineShowPage(page, options = {}) {
-
-	page = parseInt(page);
-	if (page == 0) {
-		page = 1;
-	} else if (page > 0) {
-		page = ((page - 1) % total_pages) + 1;
-	} else {
-		page = total_pages + ((page + 1) % total_pages);
-	}
-	return page
-}
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
 
 /**
  * Create and return ShowEmbed template
@@ -31,14 +9,13 @@ function defineShowPage(page, options = {}) {
  * @returns {Discord.Embed}
  */
 function createEmbed(page, total_pages) {
-	return {
-		title: `Your collection :`,
-		description: `${total_pages == 1 ? "This is your entire collection" : "This is a part of your collection, use :\n:arrow_left: :arrow_right: to change pages."}`,
-		fields: [],
-		footer: {
-			text: `page ${page + 1}/${total_pages}`
-		}
-	}
+	const embed = new EmbedBuilder()
+		.setTitle("Your collection :")
+		.setDescription(`${total_pages == 1 ? "This is your entire collection" : "This is a part of your collection, use :\n:arrow_left: :arrow_right: to change pages."}`)
+	if (total_pages > 1)
+		embed.setFooter({text: `page ${page + 1}/${total_pages}`})
+
+	return(embed);
 }
 
 /**
@@ -47,33 +24,32 @@ function createEmbed(page, total_pages) {
  * @returns {Discord.Component}
  */
 function createButtons() {
-	return {
-		type: 1,
-		components: [
-			{
-				"type": 2,
-				"style": 1,
-				"custom_id": "collectionPrevious",
-				"emoji": "⬅️"
-			},
-			{
-				"type": 2,
-				"style": 1,
-				"custom_id": "collectionFolowing",
-				"emoji": "➡️"
-			}
-		]
-	}
+	const row = new ActionRowBuilder()
+		.addComponents(
+			new ButtonBuilder()
+				.setCustomId("collectionPrevious")
+				.setStyle(ButtonStyle.Primary)
+				.setEmoji("⬅️")
+		)
+		.addComponents(
+			new ButtonBuilder()
+				.setCustomId("collectionFolowing")
+				.setStyle(ButtonStyle.Primary)
+				.setEmoji("➡️")
+		)
+
+	return [row];
 }
 
-function successMessage(options) {
+function successEmbed(options) {
 	let {
 		page: page = 1,
-		displayLen: displayLen = 15,
+		displayLen : displayLen = 15,
 		series: series = []
 	} = options;
+	displayLen = displayLen ?? 15;
+	const totalPages = Math.ceil(series.length / displayLen)
 
-	const totalPages =  Math.ceil(series.length / displayLen)
 	while (page < 0) {
 		page = totalPages + page;
 	}
@@ -88,15 +64,15 @@ function successMessage(options) {
 	}
 
 	for (let i = firstValue; i < lastValue; i++) {
-		embed.fields.push({ name : series[i].title, value: series[i].volume_list });
+		embed.addFields({ name : series[i].title, value: series[i].volume_list });
 	}
 
-	let message = { content: "Salut", embeds: [ embed ] };
-	if (totalPages > 1) {
-		message.components = [ createButtons() ];
-	}
+	let embeds = [ embed.data ];
+	return embeds;
+}
 
-	return message;
+function succesContent(user_collection) {
+	return `your collection containe : ${user_collection.total_books} books.`
 }
 
 module.exports = async function (mirors, options) {
@@ -104,9 +80,11 @@ module.exports = async function (mirors, options) {
 		field: field = undefined,
 		coeficient: coeficient = 0,
 		userId: userId = undefined,
+		update: update = false
 	} = options;
-	let res;
+	let message = {};
 	const db_userSeries = mirors.get("UserSeries");
+	const db_collections = mirors.get("Collections");
 
 	try {
 		const userSeries = await db_userSeries.getAll(userId);
@@ -115,14 +93,26 @@ module.exports = async function (mirors, options) {
 				const resop = field == "volume_list" ? db_userSeries.volume_list.compare(a.volume_list, b.volume_list) : (a[field] < b[field]);
 				return coeficient * (resop ? -1 : 1);
 			}) : userSeries;
-			res = successMessage(options);
+			message.embeds = successEmbed(options);
+
+			const user_collection = await db_collections.findByPk(userId);
+
+			if (update) {
+				user_collection.total_books = options.series.reduce(
+					(accumulator, currentValue) => accumulator + db_userSeries.volume_list.countTotalVolume(currentValue.volume_list),
+					0
+				)
+			}
+			message.content = succesContent(user_collection);
+
+			if (message.embeds[0].footer) message.components = createButtons();
 		} else {
-			res = {content: "Sorry, you have no serie."}
+			message = {content: "Sorry, you have no serie."}
 		}
 	} catch (error) {
-		res = {content: "An error as occured"};
+		message = {content: "An error as occured"};
 		console.log(error);
 	}
 
-	return res;
+	return message;
 }

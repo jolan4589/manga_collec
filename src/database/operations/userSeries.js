@@ -9,10 +9,7 @@ module.exports = async function (client) {
 	const files = fs.readdirSync("./src/database/operations/userSeries").filter(file => file.endsWith(".js")).map(file => file.slice(0,-3));	
 	let userSeries;
 
-	//console.log(">", client.db.mirors);
-	while (!(userSeries = await client.db.mirors.get("UserSeries"))) {
-		console.log(userSeries)
-	}
+	while (!(userSeries = await client.db.mirors.get("UserSeries")));
 
 	for (const file of files) {
 		userSeries[file] = require(`./userSeries/${file}.js`);

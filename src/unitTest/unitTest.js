@@ -67,7 +67,6 @@ function runAllTests(path) {
 
 	console.log(`< Total passed : ${result.map(val => val.result[0]).reduce((a,b) => a+b, 0)}/${result.map(val => val.result[1] + val.result[0]).reduce((a, b) => a + b, 0)} >`);
 	for (const dir of subDir) {
-		console.log(">", path, dir)
 		runAllTests(`${path}/${dir}`);
 	}
 }

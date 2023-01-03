@@ -47,14 +47,15 @@ module.exports = {
 	async execute(interaction) {
 		const hide = interaction.options.getBoolean("hide") ?? false
 
-		const db_userSeries = interaction.client.db.mirors.get("UserSeries");
+		const db_userSeries = await interaction.client.db.mirors.get("UserSeries");
 
 		const res = await db_userSeries.toMessage(interaction.client.db.mirors, {
 			page: (interaction.options.getInteger("page") ?? 1) - 1,
 			field: interaction.options.getString("sortby"),
 			displayLen: interaction.options.getInteger("displaylen"),
 			coeficient: interaction.options.getInteger("sort"),
-			userId: interaction.user.id
+			userId: interaction.user.id,
+			update: true
 		});
 
 		interaction.client.collectors.collectionPreviousCollector(interaction);
